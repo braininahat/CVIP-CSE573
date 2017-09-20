@@ -9,6 +9,12 @@ function [filterResponses] = extractFilterResponses(img, filterBank)
 
 % TODO Implement your code here
 
+% Coverting to pseudo RGB if grayscale
+
+if size(img,3)==1
+	img = repmat(img,[1,1,3]);
+end
+
 % Converting to Lab colorspace
 lab_img = RGB2Lab(img);
 filterResponses = [];
@@ -18,7 +24,7 @@ dims = size(filterBank);
 
 % Concatenating along z axis
 for i = 1:1:dims(1)
-    filterResponses = cat(3,filterResponses,imfilter(lab_img,filterbank{i,1}));
+    filterResponses = cat(3,filterResponses,imfilter(lab_img,filterBank{i,1}));
 end
 
 end
