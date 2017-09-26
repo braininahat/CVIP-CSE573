@@ -39,4 +39,5 @@ function [filterBank, dictionary] = getFilterBankAndDictionary(imPaths)
     end
     close(h)
     [~, dictionary] = kmeans(all_responses,150);
+%     dictionary = transpose(dictionary);
 end

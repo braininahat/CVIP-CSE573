@@ -12,7 +12,7 @@ function guessedImage = guessImage( imagename )
 	% imshow(image);
 	fprintf('[Getting Visual Words..]\n');
 	wordMap = getVisualWords(image, filterBank, dictionary);
-	h = getImageFeaturesSPM(3, wordMap, size(dictionary,2));
+	h = getImageFeaturesSPM(3, wordMap, size(dictionary,1));
 	distances = distanceToSet(h, train_features);
 	[~,nnI] = max(distances);
 	guessedImage = mapping{train_labels(nnI)};
