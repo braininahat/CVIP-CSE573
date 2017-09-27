@@ -21,8 +21,8 @@ function [h] = getImageFeaturesSPM(layerNum, wordMap, dictionarySize)
     col_size = ceil(col/4);
     
     for i = 1:row_size:row
+        i2 = min(i + (row_size - 1),row);
         for j = 1:col_size:col
-            i2 = min(i + (row_size - 1),row);
             j2 = min(j + (col_size - 1),col);
             split{count,1} = wordMap(i:i2,j:j2); 
             count = count + 1;
