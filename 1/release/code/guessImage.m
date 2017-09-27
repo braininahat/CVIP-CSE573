@@ -3,25 +3,24 @@ function guessedImage = guessImage( imagename )
 % Input:
 %   imagename - path to the image
 
-	fprintf('[Loading..]\n');
+% 	fprintf('[Loading..]\n');
 	load('vision.mat');
 	load('../data/traintest.mat','mapping');
 
 	image = im2double(imread(imagename));
 
 	% imshow(image);
-	fprintf('[Getting Visual Words..]\n');
+% 	fprintf('[Getting Visual Words..]\n');
 	wordMap = getVisualWords(image, filterBank, dictionary);
 	h = getImageFeaturesSPM(3, wordMap, size(dictionary,1));
 	distances = distanceToSet(h, train_features);
-    size(distances)
+%   size(distances)
 	[~,nnI] = max(distances);
-    nnI
 	guessedImage = mapping{train_labels(nnI)};
-	fprintf('[My Guess]:%s.\n',guessedImage);
+% 	fprintf('[My Guess]:%s.\n',guessedImage);
 
-	figure(1);
-	imshow(image);
-	title('image to classify')
+% 	figure(1);
+% 	imshow(image);
+% 	title('image to classify')
 
 end

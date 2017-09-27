@@ -3,11 +3,14 @@ function [conf] = evaluateRecognitionSystem()
 
 	load('vision.mat');
 	load('../data/traintest.mat');
-
+    c = zeros(8);
 	% TODO Implement your code here
-    guesses = [];
     for i = 1:1:size(test_imagenames,1)
-    guesses = cat(2,guesses,guessImage(test_imagenames{i,1}));
-    c = [];
-
+        guess = guessImage(test_imagenames{i,1});
+        guessed_label = find(strcmp(mapping,guess));
+        actual_label = test_labels(i);
+        c(actual_label,guessed_label) = c(actual_label,guessed_label) + 1;
+    end
+    accuracy = trace(c)/sum(c(:))
+    conf = c
 end
