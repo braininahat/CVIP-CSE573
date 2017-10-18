@@ -4,22 +4,22 @@ img = double(rgb2gray(img));
 
 dims = size(img);
 
+
 tic();
 
 
 n = 10;
-sigma = 2;
-k = ceil(6*sigma+1);
-% threshold = 1200; %change later
-log = fspecial('log',k,sigma);
-log = sigma.^2 * log;
 
+% threshold = 1200; %change later
 response = [];
 
 for i = 1:n
-    temp = imfilter(imresize(img,double(1/((2^(1/4))^i)),'bicubic'),log,'replicate');
+    sigma = 2 * (2^(1/4))^i;
+    k = ceil(6*sigma+1);
+    log = fspecial('log',k,sigma);
+    log = sigma.^2 * log;
+    temp = imfilter(img,log,'replicate');
     temp = temp.^2;
-    temp = imresize(temp,dims,'bicubic');
     response = cat(3,response,temp);
 end
 
@@ -57,7 +57,7 @@ result = result .* threshmap;
 indices = [];
 for l = 1:n
     [r,c] = find(result(:,:,l));
-    l_vect = repmat(sqrt(l^sigma),size(r,1),1);
+    l_vect = repmat(sqrt(l^2),size(r,1),1);
     plane_indices = cat(2,r(:),c(:),l_vect(:));
     indices = cat(1,indices,plane_indices);
 end
