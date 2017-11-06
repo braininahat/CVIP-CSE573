@@ -10,7 +10,6 @@ tic();
 
 n = 10;
 
-% threshold = 1200; %change later
 response = [];
 
 for i = 1:n
@@ -42,17 +41,12 @@ end
 
 local_max = max(local,[],2);
 max_plane = reshape(local_max,dims);
-
-%imagesc(max_plane)
-
 maxmap = (max_plane == response);
 result = max_plane .* maxmap;
 result_vals = find(result);
 threshold = sqrt(mean(result_vals))+sqrt(std(result_vals));
 threshmap = result > threshold;
 result = result .* threshmap;
-
-% imagesc(result(:,:,3))
 
 indices = [];
 for l = 1:n
@@ -62,6 +56,4 @@ for l = 1:n
     indices = cat(1,indices,plane_indices);
 end
 
-% size(indices)
-
-show_all_circles(im2,indices(:,2),indices(:,1),indices(:,3))
+% show_all_circles(im2,indices(:,2),indices(:,1),indices(:,3))
