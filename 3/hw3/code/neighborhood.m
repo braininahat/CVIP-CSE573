@@ -1,20 +1,12 @@
-function neighborhood = neighborhood(img,row,col,factor) %TODO generalize size
-% neighborhood = ones(3);
-% neighborhood(1,1) = img(row-1,col-1);
-% neighborhood(1,2) = img(row-1,col);
-% neighborhood(1,3) = img(row-1,col+1);
-% neighborhood(2,1) = img(row,col-1);
-% neighborhood(2,2) = img(row,col);
-% neighborhood(2,3) = img(row,col+1);
-% neighborhood(3,1) = img(row+1,col-1);
-% neighborhood(3,2) = img(row+1,col);
-% neighborhood(3,3) = img(row+1,col+1);
-% neighborhood = reshape(neighborhood,[1,9]);
+function neighborhood_final = neighborhood(img,row,col,factor)
 value = ((factor-1)*2)+1;
 neighborhood = ones(value);
-for i = 1:value
-    for j = 1:value
-        neighborhood(i,j) = img(i+factor,j+factor);
+neighborhood_final = [];
+for count = 1:size(row,1)
+    for i = 1:value
+        for j = 1:value
+            neighborhood(i,j) = img(row(count)+i-1,col(count)+j-1);
+        end
     end
-end
+    neighborhood_final = cat(1,neighborhood_final,neighborhood(:)');
 end
