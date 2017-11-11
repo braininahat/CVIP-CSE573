@@ -40,4 +40,16 @@ right_c_main = left_c(match_c);
 left_hom = [left_r_main,left_c_main,ones(match_count,1)];
 right_hom = [right_r_main,right_c_main,ones(match_count,1)];
 
-temp = ransac(left_hom,right_hom,epochs);
+distances = [];
+
+for loop = 1:epochs
+    indices = transpose(randperm(match_count,4));
+    H = homography(left_hom(indices,:),right_hom(indices,:));
+    projections = ransac(H,left_hom);
+    for inner = 1:size(right_hom,1)
+        point = right_hom(inner,:);
+        point = [point(1),point(2)];
+        dist = pdist([point;double(projections)],'euclidean');
+        distances = cat(1,distances,dist);
+    end
+end
