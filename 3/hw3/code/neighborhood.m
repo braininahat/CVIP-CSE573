@@ -1,12 +1,16 @@
-function neighborhood_final = neighborhood(img,row,col,factor)
-value = ((factor-1)*2)+1;
-neighborhood = ones(value);
-neighborhood_final = [];
-for count = 1:size(row,1)
-    for i = 1:value
-        for j = 1:value
-            neighborhood(i,j) = img(row(count)+i-1,col(count)+j-1);
-        end
+function [descriptor] = neighborhood(img,radius,r,c)
+    feature_count = length(r);
+    descriptor = zeros(feature_count, (2 * radius + 1)^2);
+    pad = zeros(2 * radius + 1); 
+    pad(radius + 1, radius + 1) = 1;
+    padded_img = imfilter(img, pad, 'replicate', 'full');
+    for i = 1 : feature_count
+        rows = r(i) : r(i) + 2 * radius;
+        cols = c(i) : c(i) + 2 * radius;
+        neighborhood = padded_img(rows, cols);
+        vect_feat = neighborhood(:);
+        descriptor(i,:) = vect_feat;
     end
-    neighborhood_final = cat(1,neighborhood_final,neighborhood(:)');
+    descriptor = zscore(descriptor')';
 end
+
