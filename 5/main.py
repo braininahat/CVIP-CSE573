@@ -1,20 +1,10 @@
 import keras
 import cv2
 import numpy as np
-import imageio
-from glob import glob
 from keras.datasets import mnist as mnist_keras
 from keras.layers import Conv2D, Dense, Dropout, Flatten, MaxPooling2D
 from keras.models import Sequential, load_model
-from keras.optimizers import RMSprop
-from keras.utils import to_categorical
 from keras import backend as K
-from scipy.misc import imresize
-from sklearn.datasets import fetch_mldata
-from sklearn.linear_model import LogisticRegression
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler
-from sklearn.utils import check_random_state
 
 node_count = 1024
 train_samples = 60000
@@ -32,7 +22,6 @@ nn_lambda = 2
 
 def cnn(mnist_x_train, mnist_y_train, mnist_x_test, mnist_y_test):
     print("\nNo existing model found. Training.\n")
-    # the data, shuffled and split between train and test sets
 
     if K.image_data_format() == 'channels_first':
         x_train = mnist_x_train.reshape(mnist_x_train.shape[0], 1, img_rows, img_cols)
@@ -51,7 +40,6 @@ def cnn(mnist_x_train, mnist_y_train, mnist_x_test, mnist_y_test):
     print(x_train.shape[0], 'train samples')
     print(x_test.shape[0], 'test samples')
 
-    # convert class vectors to binary class matrices
     y_train = keras.utils.to_categorical(mnist_y_train, num_classes)
     y_test = keras.utils.to_categorical(mnist_y_test, num_classes)
 
@@ -78,51 +66,11 @@ def cnn(mnist_x_train, mnist_y_train, mnist_x_test, mnist_y_test):
               verbose=1,
               validation_data=(x_test, y_test))
     score = model.evaluate(x_test, y_test, verbose=0)
-    # print('Test loss:', score[0])
+    print('Test loss:', score[0])
     print('\nTest accuracy on MNIST for CNN is: ', score[1])
 
     model.save("cnn.h5")
     return model
-
-# # now gotta preprocess usps
-# def usps():
-#     slp = load_model("slp.h5")
-#     cnn = load_model("cnn.h5")
-
-#     img_list = glob("proj3_images/Numerals/*/*.png")
-#     labels = [int(path.split('/')[2]) for path in img_list]
-
-#     img_list = [imageio.imread(img) for img in img_list]
-#     gray = [img[:, :, 0] for img in img_list]
-
-#     resized = [
-#         1 - (imresize(
-#             img, (img_rows,
-#                   img_cols)).flatten(order='C') / 255) for img in gray]
-
-#     resized = np.array(resized)
-
-#     logistic_score = logistic_trained.score(resized,labels)
-#     print("\nLogistic Regression accuracy on USPS is ", logistic_score)
-
-#     slp_score = slp.evaluate(
-#         resized, to_categorical(labels, num_classes), verbose=0)
-#     print("\nSLP accuracy on USPS is ", slp_score[1])
-#     # for cnn
-#     images = np.array(
-#         [(1 - (np.array(
-#             imresize(foo, (img_rows, img_cols)))) / 255) for foo in gray])
-
-#     if K.image_data_format() == 'channels_first':
-#             images = images.reshape(images.shape[0], 1, img_rows, img_cols)
-#     else:
-#             images = images.reshape(images.shape[0], img_rows, img_cols, 1)
-
-#     labels = to_categorical(labels, num_classes)
-#     cnn_score = cnn.evaluate(images, labels, verbose=0)
-#     print("\nCNN accuracy on USPS is ", cnn_score[1])
-#     return slp_score[1], cnn_score[1]
-
 
 def main():
     try:
@@ -140,10 +88,11 @@ def main():
         x_center = int(x / 2)
         y_center = int(y / 2)
         gray = gray[x_center - 100:x_center + 100, y_center - 100: y_center + 100]
+        disp = gray
         gray = cv2.equalizeHist(gray)
         gray = cv2.GaussianBlur(gray, (5, 5), 0)
         gray = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV, 31, 30)
-        cv2.imshow('frame', gray)
+        cv2.imshow('frame', disp)
         sample = cv2.resize(gray, (28, 28))
         prediction = model.predict(sample.reshape((1, 28, 28, 1)), batch_size=1, verbose=0)
         prediction = np.argmax(prediction)
