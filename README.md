@@ -1,6 +1,8 @@
 # CVIP-CSE573
 
-Repo for course assignments of the Computer Vision and Image Processing course at the University at Buffalo.
+Repo for course assignments of the Computer Vision and Image Processing course at the University at Buffalo under Dr. Kevin R Keane
+
+*Mostly Matlab with a dash of Python3, OpenCV, Keras+TensorFlow*
 
 The folders correspond to the following projects:
 
