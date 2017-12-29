@@ -10,21 +10,19 @@ function n2 = dist2(x, c)
 %	L rows and N columns, then the result has M rows and L columns.  The
 %	I, Jth entry is the  squared distance from the Ith row of X to the
 %	Jth row of C.
-%
-%
 %	Copyright (c) Ian T Nabney (1996-2001)
 
-[ndata, dimx] = size(x);
-[ncentres, dimc] = size(c);
-if dimx ~= dimc
-	error('Data dimension does not match dimension of centres')
-end
+    [ndata, dimx] = size(x);
+    [ncentres, dimc] = size(c);
+    if dimx ~= dimc
+        error('Data dimension does not match dimension of centres')
+    end
 
-n2 = (ones(ncentres, 1) * sum((x.^2)', 1))' + ...
-  ones(ndata, 1) * sum((c.^2)',1) - ...
-  2.*(x*(c'));
+    n2 = (ones(ncentres, 1) * sum((x.^2)', 1))' + ...
+      ones(ndata, 1) * sum((c.^2)',1) - ...
+      2.*(x*(c'));
 
-% Rounding errors occasionally cause negative entries in n2
-if any(any(n2<0))
-  n2(n2<0) = 0;
+    % Rounding errors occasionally cause negative entries in n2
+    if any(any(n2<0))
+      n2(n2<0) = 0;
 end

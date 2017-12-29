@@ -1,53 +1,48 @@
-left = double(rgb2gray(imread('../data/part1/uttower/left.jpg')));
-right = double(rgb2gray(imread('../data/part1/uttower/right.jpg')));
+img1 = imread('../data/part1/uttower/left.jpg');
+img2 = imread('../data/part1/uttower/right.jpg');
+
+[h1, w1, ~] = size(img1);
+[h2, w2, ~] = size(img2);
+
+gray1 = double(rgb2gray(img1));
+gray2 = double(rgb2gray(img2));
 
 sigma = 3;
-thresh = 1000;
+thresh = 2000;
 radius = 3;
 disp = 0;
-neighborhood_factor = 11; % center pixel will be factor'th position in the square 
 match_count = 200;
+neighbor_rad = 20; 
 
-%harris for points of interest
-[left_cim,left_r,left_c] = harris(left,sigma,thresh,radius,disp);
-[right_cim,right_r,right_c] = harris(right,sigma,thresh,radius,disp);
+[left_cim,r1,c1] = harris(gray1,sigma,thresh,radius,disp);
+[right_cim,r2,c2] = harris(gray2,sigma,thresh,radius,disp);
 
-%padding before extracting neighborhood
-padded_left = padarray(left,[neighborhood_factor,neighborhood_factor],'replicate');
-padded_right = padarray(right,[neighborhood_factor,neighborhood_factor],'replicate');
+descriptor1 = neighborhood(gray1, neighbor_rad, r1, c1);
+descriptor2 = neighborhood(gray2, neighbor_rad, r2, c2);
 
-%extracting neighborhoods
-left_descriptors = neighborhood(padded_left,left_r,left_c,neighborhood_factor);
-right_descriptors = neighborhood(padded_right,right_r,right_c,neighborhood_factor);
+distances = dist2(descriptor1,descriptor2);
+[~,distance_indices] = sort(distances(:),'ascend');
+matches = distance_indices(1:match_count);
+[dist_r, dist_c] = ind2sub(size(distances), matches);
+match_indices_1 = dist_r;
+match_indices_2 = dist_c;
 
-% left_ind = sub2ind(size(padded_left),padded_left);
-% right_ind = sub2ind(size(padded_right),padded_right);
-% 
-% %flattening neighborhoods to form descriptors
-% left_vectors = left_descriptors;
-% right_vectors = right_descriptors;
+match_r1 = r1(match_indices_1);
+match_c1 = c1(match_indices_1);
+match_r2 = r2(match_indices_2);
+match_c2 = c2(match_indices_2);
 
-%calculating distance
-distances = dist2(left_descriptors,right_descriptors); %returned row index is left index
+img1_hom = [match_c1, match_r1, ones(match_count,1)];
+img2_hom = [match_c2, match_r2, ones(match_count,1)];
+[H, inliers] = homography(img1_hom,img2_hom);
 
-%finding closest pairs
-[val,dist_indices] = sort(distances(:),'ascend');
-match_indices = dist_indices(1:match_count);
+match_c1 = match_c1(inliers);
+match_c2 = match_c2(inliers);
+match_r1 = match_r1(inliers);
+match_r2 = match_r2(inliers);
 
-%indices of closest pairs in distance matrix
-[match_r,match_c] = ind2sub(size(distances),match_indices); %padded vector indices
+tform = maketform('projective', H);
+img1_result = imtransform(img1, tform);
 
-%looking up in descriptor vector
-% [left_match_r,left_match_c] = [left_r(match_r),left_c(match_r)];
-% [right_match_r,right_match_c] = [right_r(match_c),right_c(match_c)];
-
-left_r_main = left_r(match_r);
-left_c_main = left_c(match_r);
-right_r_main = right_r(match_c);
-right_c_main = left_c(match_c);
-
-% creating homogenous matrices
-left_hom = [left_r_main,left_c_main,ones(match_count,1)];
-right_hom = [right_r_main,right_c_main,ones(match_count,1)];
-
-temp = ransac(left_hom,right_hom);
+stitched = stitch(img1, img2, H);
+imshow(stitched);
